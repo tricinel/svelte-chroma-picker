@@ -1,0 +1,56 @@
+{
+  "name": "svelte-chroma-picker",
+  "description": "A color picker for Svelte using chroma-js to do the color manipulations",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">= 10",
+    "npm": ">= 6"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tricinel/svelte-chroma-picker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tricinel/svelte-chroma-picker/issues"
+  },
+  "homepage": "https://github.com/tricinel/svelte-chroma-picker#readme",
+  "author": "Bogdan Lazar",
+  "license": "MIT",
+  "keywords": [
+    "svelte",
+    "color picker",
+    "picker",
+    "chroma",
+    "color"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "start": "sirv demo"
+  },
+  "files": [
+    "lib",
+    "web"
+  ],
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "eslint": "^6.8.0",
+    "eslint-plugin-svelte3": "^2.7.3",
+    "prettier": "^1.19.1",
+    "prettier-plugin-svelte": "^0.7.0",
+    "rollup": "^1.32.0",
+    "rollup-plugin-livereload": "^1.0.4",
+    "rollup-plugin-svelte": "^5.1.1",
+    "rollup-plugin-terser": "^5.2.0",
+    "sirv-cli": "^0.4.5",
+    "svelte": "^3.19.1"
+  },
+  "dependencies": {
+    "chroma-js": "^2.1.0"
+  },
+  "peerDependencies": {
+    "svelte": "^3.19.1"
+  }
+}
