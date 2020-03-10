@@ -2,7 +2,6 @@
   import ChromaPicker from '../lib/Picker.svelte';
 
   export let color;
-
   let rgb;
 
   const handleColorUpdate = ev => {

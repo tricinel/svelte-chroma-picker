@@ -3607,7 +3607,7 @@ var app = (function () {
      * valid('avocado') // false
      * String -> Boolean
      */
-    const valid = chroma.valid;
+    const { valid } = chroma;
 
     /**
      * Change the value of a single channel for a color
@@ -3690,16 +3690,16 @@ var app = (function () {
     			set_style(div0, "--top", /*colorBox*/ ctx[0].handle.y + "%");
     			set_style(div0, "--left", /*colorBox*/ ctx[0].handle.y + "%");
     			attr_dev(div0, "class", "svelte-1rsulyd");
-    			add_location(div0, file, 150, 6, 4319);
+    			add_location(div0, file, 145, 6, 4098);
     			attr_dev(div1, "data-picker", "colorBox");
     			attr_dev(div1, "class", "svelte-1rsulyd");
-    			add_location(div1, file, 155, 6, 4478);
+    			add_location(div1, file, 150, 6, 4257);
     			attr_dev(div2, "data-picker", "value");
     			attr_dev(div2, "class", "svelte-1rsulyd");
-    			add_location(div2, file, 149, 4, 4287);
+    			add_location(div2, file, 144, 4, 4066);
     			attr_dev(div3, "data-picker", "saturation");
     			attr_dev(div3, "class", "svelte-1rsulyd");
-    			add_location(div3, file, 148, 2, 4252);
+    			add_location(div3, file, 143, 2, 4031);
     			attr_dev(div4, "role", "presentation");
     			set_style(div4, "--width", /*colorBox*/ ctx[0].width + "px");
     			set_style(div4, "--height", /*colorBox*/ ctx[0].height + "px");
@@ -3707,18 +3707,18 @@ var app = (function () {
     			set_style(div4, "--color-green", /*colorBox*/ ctx[0].bg.g);
     			set_style(div4, "--color-blue", /*colorBox*/ ctx[0].bg.b);
     			attr_dev(div4, "class", "svelte-1rsulyd");
-    			add_location(div4, file, 143, 0, 4057);
+    			add_location(div4, file, 138, 0, 3836);
     			attr_dev(span, "class", "svelte-1rsulyd");
-    			add_location(span, file, 169, 2, 4863);
+    			add_location(span, file, 164, 2, 4642);
     			attr_dev(input, "type", "range");
     			attr_dev(input, "min", "0");
     			attr_dev(input, "max", "360");
     			attr_dev(input, "class", "svelte-1rsulyd");
-    			add_location(input, file, 170, 2, 4882);
+    			add_location(input, file, 165, 2, 4661);
     			set_style(label, "--width", /*colorBox*/ ctx[0].width + "px");
     			set_style(label, "--height", /*colorBox*/ ctx[0].height + "px");
     			attr_dev(label, "class", "svelte-1rsulyd");
-    			add_location(label, file, 168, 0, 4786);
+    			add_location(label, file, 163, 0, 4565);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -3821,7 +3821,7 @@ var app = (function () {
     	const dispatch = createEventDispatcher();
 
     	// Keep track of the position, size and background color of the color box picker
-    	let colorBox = {
+    	const colorBox = {
     		width,
     		height,
     		handle: { x: 0, y: 0 },
@@ -3839,62 +3839,64 @@ var app = (function () {
 
     	let colorBoxEl;
 
-    	const updateHue = h => {
-    		let rgb = hsvToRgb(h, 1, 1);
-    		updateChannel("hsv.h", h);
-    		$$invalidate(0, colorBox.bg = { r: rgb[0], g: rgb[1], b: rgb[2] }, colorBox);
-    	};
-
     	// Adjust a single channel for the color
     	const updateChannel = (channel, value) => {
     		$$invalidate(8, color = setChannel(color, channel, value));
     	};
 
+    	// Make sure both the colorBox background and the actual color are updated
+    	// whenever the hue changes
+    	const updateHue = h => {
+    		const rgb = hsvToRgb(h, 1, 1);
+    		updateChannel("hsv.h", h);
+    		$$invalidate(0, colorBox.bg = { r: rgb[0], g: rgb[1], b: rgb[2] }, colorBox);
+    	};
+
     	// When the user moved the handle, we reposition it and update the color
     	const updateColor = (x, y) => {
-    		$$invalidate(2, handleEl.style.top = y + "%", handleEl);
-    		$$invalidate(2, handleEl.style.left = x + "%", handleEl);
+    		$$invalidate(2, handleEl.style.top = `${y}%`, handleEl);
+    		$$invalidate(2, handleEl.style.left = `${x}%`, handleEl);
     		updateChannel("hsv.h", hue);
     		updateChannel("hsv.s", x / 100);
     		updateChannel("hsv.v", 1 - y / 100);
+    	};
+
+    	const minmax = (n, min = 0, max = 100) => {
+    		let result = n;
+
+    		if (n > max) {
+    			result = max;
+    		}
+
+    		if (n < min) {
+    			result = min;
+    		}
+
+    		result = result.toFixed(2);
+    		return result;
     	};
 
     	// Based on the X and Y position of the client's mouse/touch
     	// we calculate where the new position of the handle should be
     	// and update the color
     	const pick = (clientX, clientY) => {
-    		let { x, y } = colorBoxEl.getBoundingClientRect();
+    		const { x, y } = colorBoxEl.getBoundingClientRect();
     		let xPercentage = (clientX - x) / colorBox.width * 100;
     		let yPercentage = (clientY - y) / colorBox.height * 100;
-
-    		xPercentage > 100
-    		? xPercentage = 100
-    		: xPercentage < 0 ? xPercentage = 0 : null;
-
-    		yPercentage > 100
-    		? yPercentage = 100
-    		: yPercentage < 0 ? yPercentage = 0 : null;
-
-    		yPercentage = yPercentage.toFixed(2);
-    		xPercentage = xPercentage.toFixed(2);
+    		yPercentage = minmax(yPercentage);
+    		xPercentage = minmax(xPercentage);
     		updateColor(xPercentage, yPercentage);
     	};
 
     	/* Events */
-    	const touchend = event => {
-    		let { clientX, clientY } = event.touches[0];
-    		pick(clientX, clientY);
-    		trackMove = false; // We need to stop tracking at this point
-    	};
-
     	const stop = () => {
     		trackMove = false;
     	};
 
     	const mousedown = event => {
     		trackMove = true; // We need to start tracking
-    		let xPercentage = ((event.offsetX + 1) / colorBox.width * 100).toFixed(2);
-    		let yPercentage = ((event.offsetY + 1) / colorBox.height * 100).toFixed(2);
+    		const xPercentage = ((event.offsetX + 1) / colorBox.width * 100).toFixed(2);
+    		const yPercentage = ((event.offsetY + 1) / colorBox.height * 100).toFixed(2);
     		updateColor(xPercentage, yPercentage);
     	};
 
@@ -3902,8 +3904,7 @@ var app = (function () {
     		// We only perform this if the user has previously clicked on the colorBox
     		// Otherwise, we might end up updating the color whenever the user moves his mouse around
     		if (trackMove) {
-    			let { clientX, clientY } = event;
-    			pick(clientX, clientY);
+    			pick(event.clientX, event.clientY);
     		}
     	};
 
@@ -3911,8 +3912,7 @@ var app = (function () {
     		// We only perform this if the user has previously touched the colorBox
     		// Otherwise, we might end up updating the color whenever the user moves drags the page around
     		if (trackMove) {
-    			let { clientX, clientY } = event.touches[0];
-    			pick(clientX, clientY);
+    			pick(event.touches[0].clientX, event.touches[0].clientY);
     		}
     	};
 
@@ -3960,11 +3960,11 @@ var app = (function () {
     		trackMove,
     		handleEl,
     		colorBoxEl,
-    		updateHue,
     		updateChannel,
+    		updateHue,
     		updateColor,
+    		minmax,
     		pick,
-    		touchend,
     		stop,
     		mousedown,
     		mousemove,
@@ -3976,7 +3976,6 @@ var app = (function () {
     		if ("color" in $$props) $$invalidate(8, color = $$props.color);
     		if ("width" in $$props) $$invalidate(9, width = $$props.width);
     		if ("height" in $$props) $$invalidate(10, height = $$props.height);
-    		if ("colorBox" in $$props) $$invalidate(0, colorBox = $$props.colorBox);
     		if ("hue" in $$props) $$invalidate(1, hue = $$props.hue);
     		if ("trackMove" in $$props) trackMove = $$props.trackMove;
     		if ("handleEl" in $$props) $$invalidate(2, handleEl = $$props.handleEl);
@@ -3991,7 +3990,7 @@ var app = (function () {
     		if ($$self.$$.dirty & /*color*/ 256) {
     			// If the color is valid, we need to update the handle position
     			 if (valid(color)) {
-    				let { hsv } = channels(color);
+    				const { hsv } = channels(color);
 
     				// Hue-less colors (black, white, and grays), the hue component will be NaN
     				// So we need to make sure it doesn't blow up
@@ -4007,8 +4006,6 @@ var app = (function () {
     		}
 
     		if ($$self.$$.dirty & /*hue*/ 2) {
-    			// Make sure both the colorBox background and the actual color are updated
-    			// whenever the hue changes
     			 updateHue(hue);
     		}
 
@@ -4032,11 +4029,11 @@ var app = (function () {
     		height,
     		trackMove,
     		dispatch,
-    		updateHue,
     		updateChannel,
+    		updateHue,
     		updateColor,
+    		minmax,
     		pick,
-    		touchend,
     		div0_binding,
     		div1_binding,
     		input_change_input_handler
@@ -4084,7 +4081,7 @@ var app = (function () {
     /* demo/Demo.svelte generated by Svelte v3.19.1 */
     const file$1 = "demo/Demo.svelte";
 
-    // (19:6) {#if rgb}
+    // (18:6) {#if rgb}
     function create_if_block(ctx) {
     	let t0;
     	let strong0;
@@ -4111,11 +4108,11 @@ var app = (function () {
     			strong2 = element("strong");
     			t5 = text(t5_value);
     			attr_dev(strong0, "class", "svelte-qtgoq8");
-    			add_location(strong0, file$1, 20, 8, 299);
+    			add_location(strong0, file$1, 19, 8, 298);
     			attr_dev(strong1, "class", "svelte-qtgoq8");
-    			add_location(strong1, file$1, 22, 8, 347);
+    			add_location(strong1, file$1, 21, 8, 346);
     			attr_dev(strong2, "class", "svelte-qtgoq8");
-    			add_location(strong2, file$1, 24, 8, 394);
+    			add_location(strong2, file$1, 23, 8, 393);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t0, anchor);
@@ -4147,7 +4144,7 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(19:6) {#if rgb}",
+    		source: "(18:6) {#if rgb}",
     		ctx
     	});
 
@@ -4198,14 +4195,14 @@ var app = (function () {
     			t3 = space();
     			create_component(chromapicker.$$.fragment);
     			attr_dev(strong, "class", "svelte-qtgoq8");
-    			add_location(strong, file$1, 17, 6, 237);
+    			add_location(strong, file$1, 16, 6, 236);
     			attr_dev(p, "class", "svelte-qtgoq8");
-    			add_location(p, file$1, 15, 4, 216);
+    			add_location(p, file$1, 14, 4, 215);
     			attr_dev(div, "class", "svelte-qtgoq8");
-    			add_location(div, file$1, 14, 2, 206);
+    			add_location(div, file$1, 13, 2, 205);
     			set_style(main, "--color", /*color*/ ctx[0]);
     			attr_dev(main, "class", "svelte-qtgoq8");
-    			add_location(main, file$1, 12, 0, 171);
+    			add_location(main, file$1, 11, 0, 170);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");

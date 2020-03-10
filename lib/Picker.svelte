@@ -13,7 +13,7 @@
   const dispatch = createEventDispatcher();
 
   // Keep track of the position, size and background color of the color box picker
-  let colorBox = {
+  const colorBox = {
     width,
     height,
     handle: {
@@ -35,7 +35,7 @@
 
   // If the color is valid, we need to update the handle position
   $: if (valid(color)) {
-    let { hsv } = channels(color);
+    const { hsv } = channels(color);
 
     // Hue-less colors (black, white, and grays), the hue component will be NaN
     // So we need to make sure it doesn't blow up
@@ -48,52 +48,54 @@
     colorBox.handle.y = (1 - hsv.v) * 100;
   }
 
-  // Make sure both the colorBox background and the actual color are updated
-  // whenever the hue changes
-  $: updateHue(hue);
-
-  const updateHue = h => {
-    let rgb = hsvToRgb(h, 1, 1);
-    updateChannel('hsv.h', h);
-    colorBox.bg = { r: rgb[0], g: rgb[1], b: rgb[2] };
-  };
-
   // Adjust a single channel for the color
   const updateChannel = (channel, value) => {
     color = setChannel(color, channel, value);
   };
 
+  // Make sure both the colorBox background and the actual color are updated
+  // whenever the hue changes
+  const updateHue = h => {
+    const rgb = hsvToRgb(h, 1, 1);
+    updateChannel('hsv.h', h);
+    colorBox.bg = { r: rgb[0], g: rgb[1], b: rgb[2] };
+  };
+
+  $: updateHue(hue);
+
   // When the user moved the handle, we reposition it and update the color
   const updateColor = (x, y) => {
-    handleEl.style.top = y + '%';
-    handleEl.style.left = x + '%';
+    handleEl.style.top = `${y}%`;
+    handleEl.style.left = `${x}%`;
 
     updateChannel('hsv.h', hue);
     updateChannel('hsv.s', x / 100);
     updateChannel('hsv.v', 1 - y / 100);
   };
 
+  const minmax = (n, min = 0, max = 100) => {
+    let result = n;
+    if (n > max) {
+      result = max;
+    }
+    if (n < min) {
+      result = min;
+    }
+    result = result.toFixed(2);
+
+    return result;
+  };
+
   // Based on the X and Y position of the client's mouse/touch
   // we calculate where the new position of the handle should be
   // and update the color
   const pick = (clientX, clientY) => {
-    let { x, y } = colorBoxEl.getBoundingClientRect();
+    const { x, y } = colorBoxEl.getBoundingClientRect();
     let xPercentage = ((clientX - x) / colorBox.width) * 100;
     let yPercentage = ((clientY - y) / colorBox.height) * 100;
 
-    xPercentage > 100
-      ? (xPercentage = 100)
-      : xPercentage < 0
-      ? (xPercentage = 0)
-      : null;
-    yPercentage > 100
-      ? (yPercentage = 100)
-      : yPercentage < 0
-      ? (yPercentage = 0)
-      : null;
-
-    yPercentage = yPercentage.toFixed(2);
-    xPercentage = xPercentage.toFixed(2);
+    yPercentage = minmax(yPercentage);
+    xPercentage = minmax(xPercentage);
 
     updateColor(xPercentage, yPercentage);
   };
@@ -102,21 +104,16 @@
   $: valid(color) && dispatch('update', channels(color));
 
   /* Events */
-
-  const touchend = event => {
-    let { clientX, clientY } = event.touches[0];
-    pick(clientX, clientY);
-    trackMove = false; // We need to stop tracking at this point
-  };
-
   const stop = () => {
     trackMove = false;
   };
 
   const mousedown = event => {
     trackMove = true; // We need to start tracking
-    let xPercentage = (((event.offsetX + 1) / colorBox.width) * 100).toFixed(2);
-    let yPercentage = (((event.offsetY + 1) / colorBox.height) * 100).toFixed(
+    const xPercentage = (((event.offsetX + 1) / colorBox.width) * 100).toFixed(
+      2
+    );
+    const yPercentage = (((event.offsetY + 1) / colorBox.height) * 100).toFixed(
       2
     );
     updateColor(xPercentage, yPercentage);
@@ -126,8 +123,7 @@
     // We only perform this if the user has previously clicked on the colorBox
     // Otherwise, we might end up updating the color whenever the user moves his mouse around
     if (trackMove) {
-      let { clientX, clientY } = event;
-      pick(clientX, clientY);
+      pick(event.clientX, event.clientY);
     }
   };
 
@@ -135,8 +131,7 @@
     // We only perform this if the user has previously touched the colorBox
     // Otherwise, we might end up updating the color whenever the user moves drags the page around
     if (trackMove) {
-      let { clientX, clientY } = event.touches[0];
-      pick(clientX, clientY);
+      pick(event.touches[0].clientX, event.touches[0].clientY);
     }
   };
 </script>
