@@ -1,7 +1,7 @@
 {
   "name": "svelte-chroma-picker",
   "description": "A color picker for Svelte using chroma-js to do the color manipulations",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "node": ">= 10",
     "npm": ">= 6"
