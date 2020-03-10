@@ -12,13 +12,13 @@ export default {
     sourcemap: true,
     format: 'iife',
     name: 'app',
-    file: production ? 'dist/index.js' : 'demo/build/bundle.js'
+    file: production ? 'web/index.js' : 'demo/build/bundle.js'
   },
   plugins: [
     svelte({
       dev: !production,
       css: css => {
-        css.write(production ? 'dist/index.css' : 'demo/build/bundle.css');
+        css.write(production ? 'web/index.css' : 'demo/build/bundle.css');
       },
       customElement: production,
       tag: production && 'chroma-picker'
