@@ -1,5 +1,5 @@
 <script>
-  import ChromaPicker from '../lib/Picker.svelte';
+  import ChromaPicker from '../src/Picker.svelte';
 
   export let color;
   let rgb;

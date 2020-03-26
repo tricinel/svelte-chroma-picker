@@ -101,7 +101,11 @@
   };
 
   // Whenever we have a valid color, we can let the consumer know of the current value
-  $: valid(color) && dispatch('update', channels(color));
+  $: valid(color) &&
+    dispatch('update', {
+      hex: color,
+      ...channels(color)
+    });
 
   /* Events */
   const stop = () => {

@@ -1,13 +1,15 @@
 {
   "name": "svelte-chroma-picker",
   "description": "A color picker for Svelte using chroma-js to do the color manipulations",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "engines": {
     "node": ">= 10",
     "npm": ">= 6"
   },
-  "main": "index.js",
-  "svelte": "lib/Picker.svelte",
+  "module": "lib/index.mjs",
+  "main": "lib/index.js",
+  "svelte": "src/index.js",
+  "browser": "web/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/tricinel/svelte-chroma-picker.git"
@@ -27,12 +29,15 @@
   ],
   "scripts": {
     "prebuild": "yarn lint",
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "build:web": "rollup -c ./config/rollup.config.web.js",
+    "build:prod": "rollup -c ./config/rollup.config.production.js",
+    "build": "npm-run-all --parallel build:**",
+    "dev": "rollup -c ./config/rollup.config.development.js -w",
     "start": "sirv demo",
-    "lint": "eslint lib/**/*.{svelte,js}"
+    "lint": "eslint src/**/*.{svelte,js}"
   },
   "files": [
+    "src",
     "lib",
     "web"
   ],
@@ -45,6 +50,7 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-svelte3": "^2.7.3",
+    "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
     "prettier-plugin-svelte": "^0.7.0",
     "rollup": "^1.32.0",

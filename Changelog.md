@@ -1,3 +1,10 @@
+### v1.1.0
+
+---
+
+- Fix custom element
+- Fix svelte imports
+
 ### v1.0.1
 
 ---

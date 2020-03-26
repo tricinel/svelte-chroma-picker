@@ -3,7 +3,7 @@ module.exports = {
   plugins: ['svelte3', 'prettier'],
   overrides: [
     {
-      files: ['lib/**/*.svelte'],
+      files: ['src/**/*.svelte'],
       processor: 'svelte3/svelte3',
       rules: {
         'prettier/prettier': 'off',
