@@ -19,9 +19,7 @@ export const { valid } = chroma;
  * (String, String, String) -> String
  */
 export const setChannel = (color, channel, value) =>
-  chroma(color)
-    .set(channel, value)
-    .hex();
+  chroma(color).set(channel, value).hex();
 
 /**
  * Return the channels for a given color
@@ -29,7 +27,7 @@ export const setChannel = (color, channel, value) =>
  * @return {Object} The rgb and hsv channels as an object
  * String -> { { Number, Number, Number } }
  */
-export const channels = color => {
+export const channels = (color) => {
   const chromaColor = chroma(color);
   return {
     rgb: {
