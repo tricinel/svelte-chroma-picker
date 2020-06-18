@@ -16,7 +16,7 @@
 > pull requests from branches on your fork. To do this, run:
 >
 > ```sh
-> git remote add upstream https://github.com/tricinel/highlight-words.git
+> git remote add upstream https://github.com/tricinel/svelte-chroma-picker.git
 > git fetch upstream
 > git branch --set-upstream-to=upstream/master master
 > ```
