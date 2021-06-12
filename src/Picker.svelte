@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { valid, setChannel, channels, hsvToRgb } from './colors';
+  import { valid, setChannel, channels, hsvToRgb, hsvToHex } from './colors';
 
   // The initial color which the consumer can pass in
   export let color = '#fff';
@@ -67,10 +67,7 @@
   const updateColor = (x, y) => {
     handleEl.style.top = `${y}%`;
     handleEl.style.left = `${x}%`;
-
-    updateChannel('hsv.h', hue);
-    updateChannel('hsv.s', x / 100);
-    updateChannel('hsv.v', 1 - y / 100);
+    color = hsvToHex(hue, x/100, 1-y/100);
   };
 
   const minmax = (n, min = 0, max = 100) => {

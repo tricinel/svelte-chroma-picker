@@ -53,3 +53,14 @@ export const channels = (color) => {
  */
 export const hsvToRgb = (hue, saturation, value) =>
   chroma.hsv(hue, saturation, value).rgb();
+
+/**
+ *
+ * @param {Number} hue The Hue for the color
+ * @param {Number} saturation The Saturation for the color
+ * @param {Number} value The Value for the color
+ * @return {String} The HEX code for the new color
+ * (String, String, String) -> String
+ */
+export const hsvToHex = (hue, saturation, value) =>
+  chroma.hsv(hue, saturation, value).hex();

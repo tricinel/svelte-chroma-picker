@@ -1,3 +1,9 @@
+### v1.1.1
+
+---
+
+- Fix hueless colors returing the same values for rgb (#4)
+
 ### v1.1.0
 
 ---
